@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'main/base.html' %}
+
+{% block title %}New user · Ledger{% endblock %}
+
+{% block nav_action %}
+  <a class="btn out" href="{% url 'home' %}">← All people</a>
+{% endblock %}
+
+{% block content %}
+  <form method="post" class="card" style="max-width:480px;margin:8px auto 0;padding:28px">
+    {% csrf_token %}
+    <h1 style="font-size:24px">New user</h1>
+    <p class="mut" style="margin:6px 0 24px">Add a person to start tracking their transactions.</p>
+
+    {% for field in form %}
+      <div class="field">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+
+    <div style="display:flex;gap:12px;justify-content:flex-end">
+      <a class="btn out" href="{% url 'home' %}">Cancel</a>
+      <button class="btn" type="submit">Create user</button>
+    </div>
+  </form>
+{% endblock %}
+</body>
+</html>

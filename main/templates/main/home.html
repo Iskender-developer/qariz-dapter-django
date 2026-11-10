@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'main/base.html' %}
+
+{% block title %}People · Ledger{% endblock %}
+
+{% block nav_action %}
+  <a class="btn" href="{% url 'create' %}">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+    New user
+  </a>
+{% endblock %}
+
+{% block content %}
+  <h1>People</h1>
+  <p class="mut" style="margin:6px 0 28px">Select a person to see their transactions.</p>
+
+  {% if users %}
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px">
+      {% for u in users %}
+        <a class="card card-link" href="{% url 'transaction' u.id %}" style="display:block;padding:20px">
+          <div style="display:flex;gap:14px;align-items:center">
+            <div class="av">{{ u.first_name|slice:":1" }}{{ u.last_name|slice:":1" }}</div>
+            <div>
+              <div style="font-weight:600">{{ u.first_name }} {{ u.last_name }}</div>
+              <div class="mut">{{ u.phone }}</div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:end;margin-top:20px;padding-top:16px;border-top:1px solid #f4f4f5">
+            <div>
+              <div class="mut" style="font-size:12px">Balance</div>
+              <div class="{% if u.total < 0 %}neg{% elif u.total > 0 %}pos{% endif %}" style="font-weight:600;font-size:20px">
+                {% if u.total > 0 %}+{% endif %}{{ u.total|floatformat:"2g" }}
+              </div>
+            </div>
+            <span style="font-size:14px;font-weight:500">Transactions →</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="card" style="padding:48px 24px;text-align:center">
+      <p style="margin:0 0 16px;font-weight:600">No people yet</p>
+      <a class="btn" href="{% url 'create' %}">Create your first user</a>
+    </div>
+  {% endif %}
+{% endblock %}
+</body>
+</html>

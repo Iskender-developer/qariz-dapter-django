@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'main/base.html' %}
+
+{% block title %}{{ profile.first_name }} {{ profile.last_name }} · Ledger{% endblock %}
+
+{% block nav_action %}
+  <a class="btn out" href="{% url 'home' %}">← All people</a>
+{% endblock %}
+
+{% block content %}
+  <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center;margin-bottom:24px">
+    <div style="display:flex;gap:16px;align-items:center">
+      <div class="av" style="width:56px;height:56px;font-size:18px">{{ profile.first_name|slice:":1" }}{{ profile.last_name|slice:":1" }}</div>
+      <div>
+        <h1 style="font-size:26px">{{ profile.first_name }} {{ profile.last_name }}</h1>
+        <div class="mut">{{ profile.phone }}</div>
+      </div>
+    </div>
+    <div class="card" style="padding:16px 24px;min-width:220px">
+      <div class="mut" style="font-size:12px">Total balance</div>
+      <div class="{% if total < 0 %}neg{% elif total > 0 %}pos{% endif %}" style="font-weight:700;font-size:28px">
+        {% if total > 0 %}+{% endif %}{{ total|floatformat:"2g" }}
+      </div>
+    </div>
+  </div>
+
+  <section class="card" style="overflow:hidden">
+    <div style="padding:16px 20px;font-weight:600">Transaction history</div>
+    {% for t in transitions %}
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-top:1px solid #f4f4f5">
+        <div>
+          <div style="font-weight:500">{% if t.amount < 0 %}Owe{% else %}Pay{% endif %}</div>
+          <div class="mut" style="font-size:13px">{{ t.date|date:"d M Y" }}</div>
+        </div>
+        <div class="{% if t.amount < 0 %}neg{% else %}pos{% endif %}" style="font-weight:600">
+          {% if t.amount > 0 %}+{% endif %}{{ t.amount|floatformat:"2g" }}
+        </div>
+      </div>
+    {% empty %}
+      <div class="mut" style="padding:32px 20px;border-top:1px solid #f4f4f5;text-align:center">No transactions yet.</div>
+    {% endfor %}
+  </section>
+
+  <form method="post" class="card" style="padding:20px;margin-top:20px;display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start">
+    {% csrf_token %}
+    <div style="flex:1;min-width:220px">
+      <label for="{{ form.amount.id_for_label }}" style="display:block;font-weight:500;font-size:14px;margin-bottom:8px">New transaction amount</label>
+      {{ form.amount }}
+      {{ form.amount.errors }}
+    </div>
+    <div style="display:flex;gap:12px;padding-top:30px">
+      <button class="btn bad" type="submit" name="owe" style="min-width:120px">Owe</button>
+      <button class="btn" type="submit" name="pay" style="min-width:120px">Pay</button>
+    </div>
+  </form>
+{% endblock %}
+</body>
+</html>
